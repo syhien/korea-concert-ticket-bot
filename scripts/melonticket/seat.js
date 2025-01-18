@@ -51,6 +51,7 @@ async function findSeat() {
 
             seat[i].dispatchEvent(clickEvent);
             frame.document.getElementById("nextTicketSelection").click();
+            window.focus(); // 将当前窗口聚焦到前台
             return true;
         }
     }
