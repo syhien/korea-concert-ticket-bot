@@ -61,7 +61,35 @@ async function findSeat() {
 async function checkCaptchaFinish() {
     if (document.getElementById("certification").style.display != "none") {
         await sleep(1000);
-        checkCaptchaFinish();
+        console.log("Captcha detected, solving...");
+        let img = document.getElementById("captchaImg");
+        let base64img = img.src;
+        let base64 = base64img.split(",")[1];
+
+        // 发送请求到 API 获取验证码
+        let response = await fetch('https://api.jfbym.com/api/YmServer/customApi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: base64, token: "fbo_xEsWYlWsIvutIqYB6IpZ_eoh6UY5cPZbLhfJ7ak", type: "10103" })
+        });
+
+        let result = await response.json();
+        console.log(result);
+        let captchaCode = result.data.data;
+
+        // 填充验证码
+        // <input type="text" id="label-for-captcha" class="inputType mhover" style="border-color:#ddd;text-transform:uppercase;" maxlength="8">
+        let input = document.getElementById("label-for-captcha");
+        input.value = captchaCode;
+
+        // 点击确认按钮
+        // <a href="#none" class="btn_flexible btn_full_radius" id="btnComplete"><span>Submit</span></a>
+        let submit = document.getElementById("btnComplete");
+        submit.click();
+
+        // checkCaptchaFinish();
         return;
     }
     let frame = theFrame();
@@ -82,6 +110,7 @@ async function searchSeat(data) {
         clickOnArea(sec);
         if (await findSeat()) {
             checkCaptchaFinish();
+            frame.document.getElementById("nextTicketSelection").click();
             return;
         }
     }
@@ -93,6 +122,7 @@ async function waitFirstLoad() {
     let concertId = getConcertId();
     let data = await get_stored_value(concertId);
     await sleep(1000);
+    await checkCaptchaFinish();
     searchSeat(data);
 }
 
