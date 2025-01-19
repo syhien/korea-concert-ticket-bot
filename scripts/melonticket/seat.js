@@ -51,7 +51,35 @@ async function findSeat() {
 
             seat[i].dispatchEvent(clickEvent);
             frame.document.getElementById("nextTicketSelection").click();
-            window.focus(); // 将当前窗口聚焦到前台
+            
+            // 检查并发送通知
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    let notification = new Notification("提示", {
+                        body: "发现合适的座位，点击切换窗口",
+                        icon: "icon.png"
+                    });
+                    
+                    // 通知点击事件，用户点击通知时窗口会聚焦
+                    notification.onclick = () => {
+                        window.focus();
+                    };
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            let notification = new Notification("提示", {
+                                body: "发现合适的座位，点击切换窗口",
+                                icon: "icon.png"
+                            });
+
+                            notification.onclick = () => {
+                                window.focus();
+                            };
+                        }
+                    });
+                }
+            }
+
             return true;
         }
     }
