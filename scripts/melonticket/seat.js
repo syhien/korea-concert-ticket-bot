@@ -53,6 +53,7 @@ async function findSeat() {
             frame.document.getElementById("nextTicketSelection").click();
             
             // 检查并发送通知
+            sendEmail("刚刚发现座位，已尝试锁座");
             if ("Notification" in window) {
                 if (Notification.permission === "granted") {
                     let notification = new Notification("提示", {
@@ -156,6 +157,36 @@ async function checkCaptchaFinish() {
     await sleep(500);
     frame.document.getElementById("nextTicketSelection").click();
     return;
+}
+
+async function sendEmail(notice) {
+    const url = 'http://localhost:5000/send-email';
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    const data = {
+        subject: '来自工位的bot的通知',
+        message: notice,
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Email sent successfully:', result);
+        return result;
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
 }
 
 async function reload() {
