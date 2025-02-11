@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "EasyConcertKorea",
     "description": "Extension to get easily the concert on korean website",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "permissions": [
         "storage"
     ],
@@ -25,7 +25,7 @@
                 "https://tkglobal.melon.com/reservation/popup/onestop.htm/*",
                 "https://tkglobal.melon.com/reservation/popup/onestop.htm"
             ],
-            "js": ["scripts/common/storage.js", "scripts/common/sleep.js", "scripts/melonticket/seat.js"],
+            "js": ["scripts/common/storage.js", "scripts/common/sleep.js", "scripts/melonticket/seat.js", "scripts/common/html2canvas.min.js"],
             "run_at":"document_end"
         },
         {

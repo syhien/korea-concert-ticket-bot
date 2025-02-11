@@ -17,7 +17,7 @@ function getConcertId() {
 function openEverySection() {
     let frame = theFrame();
     let section = frame.document.getElementsByClassName("seat_name");
-    console.log(section);
+    // console.log(section);
     for (let i = 0; i < section.length; i++) {
         section[i].parentElement.click();
     }
@@ -39,7 +39,7 @@ async function findSeat() {
     let frame = theFrame();
     let canvas = frame.document.getElementById("ez_canvas");
     let seat = canvas.getElementsByTagName("rect");
-    console.log(seat);
+    // console.log(seat);
     await sleep(130);
     for (let i = 0; i < seat.length; i++) {
         let fillColor = seat[i].getAttribute("fill");
@@ -86,9 +86,69 @@ async function findSeat() {
     return false;
 }
 
+async function captureElementScreenshot(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.error(`Element with id ${elementId} not found`);
+        return;
+    }
+
+    try {
+        const canvas = await html2canvas(element);
+        const screenshot = canvas.toDataURL("image/png").split(",")[1]; // Return base64 string without data URL prefix
+        console.log("Screenshot captured:", screenshot);
+        return screenshot;
+    } catch (error) {
+        console.error("Error capturing screenshot:", error);
+    }
+}
+
+async function sendImageToApi(base64Image) {
+    const url = 'https://api.jfbym.com/api/YmServer/customApi';
+    const body = JSON.stringify({
+        image: base64Image,
+        token: 'fbo_xEsWYlWsIvutIqYB6IpZ_eoh6UY5cPZbLhfJ7ak',
+        type: '10111'
+    });
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const data = result.data.data;
+        console.log('API response:', data);
+        return data;
+    } catch (error) {
+        console.error('Error sending image to API:', error);
+    }
+}
+
 async function checkCaptchaFinish() {
     if (document.getElementById("certification").style.display != "none") {
-        await sleep(1000);
+        console.log("Captcha detected, solving...");
+        let screenshot = await captureElementScreenshot("captchaImg");
+        let response = await sendImageToApi(screenshot);
+        // #label-for-captcha
+        document.getElementById("label-for-captcha").value = response;
+        // #btnComplete
+        document.getElementById("btnComplete").click();
+        await sleep(130);
+        if (document.getElementById("errorMessage").style.display != "none") {
+            // #btnReload
+            console.log("Captcha error, reloading...");
+            document.getElementById("btnReload").click();
+            await sleep(1000);
+        }
         checkCaptchaFinish();
         return;
     }
@@ -121,6 +181,7 @@ async function waitFirstLoad() {
     let concertId = getConcertId();
     let data = await get_stored_value(concertId);
     await sleep(1000);
+    checkCaptchaFinish();
     searchSeat(data);
 }
 
