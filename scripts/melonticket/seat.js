@@ -40,7 +40,7 @@ async function findSeat() {
     let canvas = frame.document.getElementById("ez_canvas");
     let seat = canvas.getElementsByTagName("rect");
     // console.log(seat);
-    await sleep(130);
+    await sleep(169);
     for (let i = 0; i < seat.length; i++) {
         let fillColor = seat[i].getAttribute("fill");
     

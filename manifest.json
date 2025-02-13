@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "EasyConcertKorea",
     "description": "Extension to get easily the concert on korean website",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "permissions": [
         "storage"
     ],
