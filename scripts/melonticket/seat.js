@@ -105,11 +105,11 @@ async function captureElementScreenshot(elementId) {
 }
 
 async function sendImageToApi(base64Image) {
-    const url = 'https://api.jfbym.com/api/YmServer/customApi';
+    const url = 'http://localhost:5000/ocr';
     const body = JSON.stringify({
         image: base64Image,
-        token: 'fbo_xEsWYlWsIvutIqYB6IpZ_eoh6UY5cPZbLhfJ7ak',
-        type: '10111'
+        // token: 'fbo_xEsWYlWsIvutIqYB6IpZ_eoh6UY5cPZbLhfJ7ak',
+        // type: '10111'
     });
 
     try {
@@ -126,7 +126,7 @@ async function sendImageToApi(base64Image) {
         }
 
         const result = await response.json();
-        const data = result.data.data;
+        const data = result.result;
         console.log('API response:', data);
         return data;
     } catch (error) {
